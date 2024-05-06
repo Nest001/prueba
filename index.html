@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+</head>
+
+<body>
+    <div class="container fade-in active">
+        <h1 class="my-4 text-center">Prueba</h1>
+
+        <!-- Formulario -->
+        <div class="my-5">
+            <form id="formulario" class="form-inline slide-up active">
+                <!-- Selector de Turno -->
+                <div class="form-group mr-3">
+                    <label for="dropdown-turno" class="mr-1">Seleccionar Turno:</label>
+                    <select id="dropdown-turno" class="form-turno">
+                        <option value="turnoadm">ADM</option>
+                        <option value="turno1">Turno 1</option>
+                        <option value="turno2">Turno 2</option>
+                        <option value="turno3">Turno 3</option>
+                    </select>
+                </div>
+
+                <!-- Selector de Área -->
+                <div class="form-group mr-3">
+                    <label for="dropdown-area" class="mr-1">Seleccione Area:</label>
+                    <select id="dropdown-area" class="form-control">
+                        <!-- Las opciones de desplegable se cargarán dinámicamente aquí -->
+                    </select>
+                </div>
+                <!--Selector de sectores-->
+                <div class="form-group mr-3" id="sector-list" style="display:none;">
+                    <label for="dropdown-sector" class="mr-1">Seleccione Sector:</label>
+                    <select id="dropdown-sector" class="form-control">
+                        <option></option>
+                    </select>
+                </div>
+
+                <!-- Selector de Fallos -->
+                <div class="form-group mr-3" id="fallo-list" style="display:none;">
+                    <label for="dropdown-fallos" class="mr-1">Seleccione Fallo:</label>
+                    <select id="dropdown-fallos" class="form-control">
+                        <option></option>
+                    </select>
+                </div>
+
+                <!-- Selector de Tiempo -->
+                <div class="form-group mr-3">
+                    <label for="tiempo">Tiempo de Fallo:</label>
+                    <input type="time" id="tiempo" class="form-control">
+                </div>
+
+                <!-- Descripción del Fallo -->
+                <div class="form-group">
+                    <label for="descripcion">Descripción del Fallo:</label>
+                    <textarea id="descripcion" class="form-control" rows="3"></textarea>
+                </div>
+
+                <button id="registrar-btn">Registrar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Realizar una solicitud AJAX para obtener las áreas disponibles
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    // Actualizar el desplegable de áreas con los datos recibidos
+                    document.getElementById("dropdown-area").innerHTML = this.responseText;
+                }
+            };
+            xhttp.open("GET", "obtener_areas.php", true);
+            xhttp.send();
+        });
+
+        document.getElementById("dropdown-area").addEventListener("change", function () {
+            var areaSeleccionada = this.value;
+
+            // Realizar una solicitud AJAX para obtener los sectores relacionados con el área seleccionada
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    // Actualizar el desplegable de sectores con los datos recibidos
+                    document.getElementById("dropdown-sector").innerHTML = this.responseText;
+                    // Mostrar el desplegable de sectores si hay datos disponibles
+                    document.getElementById("sector-list").style.display = "block";
+                }
+            };
+            xhttp.open("GET", "obtener_sectores.php?area=" + encodeURIComponent(areaSeleccionada), true);
+            xhttp.send();
+        });
+
+        document.getElementById("dropdown-sector").addEventListener("change", function () {
+            var sectorSeleccionado = this.value;
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log(this.responseText); // Imprime la respuesta en la consola
+                    document.getElementById("dropdown-fallos").innerHTML = this.responseText;
+                    document.getElementById("fallo-list").style.display = "block";
+                }
+            };
+            xhttp.open("GET", "obtener_fallos.php?sector=" + encodeURIComponent(sectorSeleccionado), true);
+            xhttp.send();
+        });
+
+
+    </script>
+</body>
+
+</html>
